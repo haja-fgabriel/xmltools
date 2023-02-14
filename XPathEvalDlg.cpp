@@ -21,6 +21,7 @@ static char THIS_FILE[] = __FILE__;
 
 /////////////////////////////////////////////////////////////////////////////
 // CXPathEvalDlg dialog
+// TODO add line, linepos and filepos columns in table
 
 CXPathEvalDlg::CXPathEvalDlg(CWnd* pParent /*=NULL*/, unsigned long flags /*= 0*/)
   : CDialog(CXPathEvalDlg::IDD, pParent)
@@ -128,10 +129,12 @@ void CXPathEvalDlg::print_xpath_nodes(std::vector<XPathResultEntryType> nodes) {
     listresults->DeleteAllItems();
 
     if (nodes.size() == 0) {
+      // TODO add line, linepos and filepos
         AddToList(listresults, "", "No result", "");
     }
     else {
         for (std::vector<XPathResultEntryType>::iterator it = nodes.begin(); it != nodes.end(); ++it) {
+            // TODO add line, linepos and filepos
             AddToList(listresults, Report::cstring((*it).type.c_str()),
                                    Report::cstring((*it).name.c_str()),
                                    Report::cstring((*it).value.c_str()));
