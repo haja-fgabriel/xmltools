@@ -334,7 +334,11 @@ std::vector<XPathResultEntryType> MSXMLWrapper::xpathEvaluate(std::wstring xpath
             res.push_back({
                 bstrNodeType,
                 bstrNodeName,
-                value
+                value,
+                // TODO add line, linepos and filepos; check if these are correct
+                line,
+                linepos,
+                filepos
             });
 
             SysFreeString(bstrNodeName);
