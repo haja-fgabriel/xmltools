@@ -10,10 +10,9 @@ struct XPathResultEntryType {
     std::wstring name;
     std::wstring value;
 
-    // TODO initialise these members if needed
-    size_t line;        // 0-based line number of match in file
-    size_t linepos;     // 0-based position in line
-    size_t filepos;     // 0-based position in whole stream
+    size_t line = 0;        // 0-based line number of match in file
+    size_t linepos = 0;     // 0-based position in line
+    size_t filepos = 0;     // 0-based position in whole stream
 };
 
 struct XSLTransformResultType {

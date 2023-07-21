@@ -9,7 +9,9 @@
 #include "MSXMLHelper.h"
 #include "XmlWrapperInterface.h"
 #include "MSXMLWrapper.h"
+#include "LibxmlWrapper.h"
 #include <assert.h>
+#include <stdlib.h>
 
 #ifdef _DEBUG
 #define new DEBUG_NEW
