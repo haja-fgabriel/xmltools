@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?> 
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup Label="UserMacros" Condition="'$(Platform)'=='Win32'">
+      <NPP_DIR>$(ProgramFiles) (x86)\Notepad++</NPP_DIR>
+  </PropertyGroup>
+  <PropertyGroup Label="UserMacros" Condition="'$(Platform)'=='x64'">
+      <NPP_DIR>$(ProgramFiles)\Notepad++</NPP_DIR>
+  </PropertyGroup>
+  <PropertyGroup />
+  <ItemDefinitionGroup />
+  <ItemGroup>
+      <BuildMacro Include="NPP_DIR">
+          <Value>$(NPP_DIR)</Value>
+      </BuildMacro>
+  </ItemGroup>
+</Project>
