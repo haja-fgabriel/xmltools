@@ -15,7 +15,7 @@
       <AdditionalDependencies>$(LIBXML_LIB_DIR)libxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>if EXIST "$(NPP_DIR)\plugins\" ( xcopy /y "$(TargetPath)" "$(NPP_DIR)\plugins\XMLTools\" )</Command>
+      <Command>if EXIST "$(NPP_DIR)\plugins\" ( xcopy /y "$(TargetPath)" "$(NPP_DIR)\plugins\XMLTools\" &amp;&amp; xcopy /y $(LIBXML_LIB_DIR)libxml2.dll "$(NPP_DIR)\plugins\XMLTools\" )</Command>
       <Message>Copy the dll into Notepad++ plugin folder</Message>
     </PostBuildEvent>
   </ItemDefinitionGroup>
