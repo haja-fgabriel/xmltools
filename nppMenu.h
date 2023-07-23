@@ -44,6 +44,7 @@ void uncommentSelection();
 void getCurrentXPathStd();
 void getCurrentXPathPredicate();
 void evaluateXPath();
+void verifyXPathOnSchema();
 
 void performXSLTransform();
 

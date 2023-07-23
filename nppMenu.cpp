@@ -172,6 +172,7 @@ void initMenu() {
     menuitems.menuitemCurrentXMLPath = addMenuItem(L"Current XML Path", getCurrentXPathStd);
     menuitems.menuitemCurrentXMLPathNS = addMenuItem(L"Current XML Path with predicates", getCurrentXPathPredicate, false, createShortcut('P'));
     menuitems.menuitemEvalXPath = addMenuItem(L"Evaluate XPath expression...", evaluateXPath);
+    menuitems.menuitemVerifyXPathOnSchema = addMenuItem(L"Verify XPath expression on schema...", verifyXPathOnSchema);
 
     addMenuSeparator();
 

@@ -111,6 +111,7 @@ struct struct_menuitems {
 	int menuitemCurrentXMLPath = -1;
 	int menuitemCurrentXMLPathNS = -1;
 	int menuitemEvalXPath = -1;
+	int menuitemVerifyXPathOnSchema = -1;
 	int menuitemXSLTransform = -1;
 	int menuitemEscape = -1;
 	int menuitemUnescape = -1;
