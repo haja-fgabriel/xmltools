@@ -116,9 +116,9 @@
 #define IDI_OPTIONS_DM                  2064
 #define IDC_CLEAR_XPATHVERIFY           2064
 #define IDI_PRETTYPRINT                 2065
-#define IDC_BUTTON2                     2065
 #define IDC_CLEAR_XPATHVERIFY_XMLNS     2065
 #define IDI_PRETTYPRINT_DM              2066
+#define IDC_XPATHVERIFY_CLOSE           2066
 #define IDI_PRETTYPRINTINDENTATTR       2067
 #define IDI_PRETTYPRINTINDENTATTR_DM    2068
 #define IDI_PRETTYPRINTINDENTONLY       2069
@@ -142,7 +142,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        2084
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         2066
+#define _APS_NEXT_CONTROL_VALUE         2067
 #define _APS_NEXT_SYMED_VALUE           2000
 #endif
 #endif

@@ -2,6 +2,7 @@
 
 #include "XmlWrapperInterface.h"
 #include <string>
+#include "libxml/xmlschemas.h"
 
 class LibxmlWrapper : public XmlWrapperInterface
 {
@@ -18,5 +19,9 @@ public:
 	std::vector<XPathResultEntryType> xpathEvaluate(std::wstring xpath, std::wstring ns = L"");
 	bool xslTransform(std::wstring xslfile, XSLTransformResultType* out, std::wstring options = L"", UniMode srcEncoding = UniMode::uniEnd);
 	bool isXPathValidOnSchema(const std::wstring& schemaFilepath, const std::string& xpath);
+	bool isXPathValidOnSchema(const std::string& xpath);
+	bool isValidSchema();
+	bool isValidSchema(LPCWSTR filePath, int filepathLength);
+	bool isValidSchema(xmlDocPtr doc);
 };
 

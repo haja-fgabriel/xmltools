@@ -40,6 +40,7 @@ BEGIN_MESSAGE_MAP(COptionsDlg, CDialogEx)
   */
   ON_BN_CLICKED(IDOK, &COptionsDlg::OnBnClickedOk)
   ON_BN_CLICKED(IDC_BTNVIEWANNOTATION, &COptionsDlg::OnBnClickedBtnviewannotation)
+    ON_BN_CLICKED(IDCANCEL, &COptionsDlg::OnBnClickedCancel)
 END_MESSAGE_MAP()
 
 void COptionsDlg::UpdateProperty(CMFCPropertyGridProperty* src, enumOptionType type) {
@@ -347,4 +348,10 @@ BOOL COptionsDlg::OnCommand(WPARAM wParam, LPARAM lParam) {
   clearErrors(NULL, true);
 
   return CDialogEx::OnCommand(wParam, lParam);
+}
+
+void COptionsDlg::OnBnClickedCancel()
+{
+    // TODO: Add your control notification handler code here
+    CDialogEx::OnCancel();
 }

@@ -48,4 +48,5 @@ public:
   afx_msg void OnBnClickedBtnviewannotation();
   virtual BOOL OnCommand(WPARAM wParam, LPARAM lParam);
   CMyPropertyGridCtrl m_wndPropList;
+  afx_msg void OnBnClickedCancel();
 };

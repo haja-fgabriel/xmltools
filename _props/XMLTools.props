@@ -13,6 +13,7 @@
     </ClCompile>
     <Link>
       <AdditionalDependencies>$(LIBXML_LIB_DIR)libxml2.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SetChecksum>true</SetChecksum>
     </Link>
     <PostBuildEvent>
       <Command>if EXIST "$(NPP_DIR)\plugins\" ( xcopy /y "$(TargetPath)" "$(NPP_DIR)\plugins\XMLTools\" &amp;&amp; xcopy /y $(LIBXML_LIB_DIR)libxml2.dll "$(NPP_DIR)\plugins\XMLTools\" )</Command>

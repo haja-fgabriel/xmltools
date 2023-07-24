@@ -102,8 +102,8 @@
     <ClCompile Include="LibxmlWrapper.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="C_VerifyXPathOnSchemaDlg.cpp">
-      <Filter>Source Files</Filter>
+    <ClCompile Include="CVerifyXPathOnSchemaDlg.cpp">
+      <Filter>Dialogs</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -194,10 +194,7 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CVerifyXPathOnSchemaDlg.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="C_VerifyXPathOnSchemaDlg.h">
-      <Filter>Header Files</Filter>
+      <Filter>Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
