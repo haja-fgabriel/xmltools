@@ -28,6 +28,7 @@ protected:
 	CStringW ShowOpenFileDlg(CStringW filetypes);
 	HWND getCurrentHScintilla(int which);
 	int VerifyXPath();
+	int IsSchemaValid();
 
 	DECLARE_MESSAGE_MAP()
 public:

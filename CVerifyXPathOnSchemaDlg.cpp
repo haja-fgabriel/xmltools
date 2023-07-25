@@ -47,18 +47,30 @@ END_MESSAGE_MAP()
 
 int CVerifyXPathOnSchemaDlg::VerifyXPath() {
 	if (m_bDoLoadFromFile) {
-		// TODO load XML schema from file
-		LibxmlWrapper* libxmlWrapper = new LibxmlWrapper("", 0);
 		
+	}
+	else {
+
+	}
+	return 0;
+}
+
+int CVerifyXPathOnSchemaDlg::IsSchemaValid() {
+	if (m_bDoLoadFromFile) {
+		// Text is loaded from file, not provided in memory, hence the empty constructor arguments
+		LibxmlWrapper* libxmlWrapper = new LibxmlWrapper("", 0);
+
 		if (!libxmlWrapper->isValidSchema(m_sFileToOpen.GetString(), m_sFileToOpen.GetLength())) {
 			Report::_printf_err(_T("The given file is not existing or it is not a valid XML schema."));
+			return (0);
 		}
+		return 1;
 	}
 	else {
 		int currentEdit;
 		::SendMessage(nppData._nppHandle, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&currentEdit);
 		HWND hCurrentEditView = getCurrentHScintilla(currentEdit);
-
+		
 		size_t currentLength = (size_t) ::SendMessage(hCurrentEditView, SCI_GETLENGTH, 0, 0);
 
 		char* data = new char[currentLength + sizeof(char)];
@@ -66,22 +78,23 @@ int CVerifyXPathOnSchemaDlg::VerifyXPath() {
 		memset(data, '\0', currentLength + sizeof(char));
 
 		::SendMessage(hCurrentEditView, SCI_GETTEXT, currentLength + sizeof(char), reinterpret_cast<LPARAM>(data));
-		
+
 		LibxmlWrapper* libxmlWrapper = new LibxmlWrapper(data, currentLength);
 
 		if (!libxmlWrapper->isValidSchema()) {
 			Report::_printf_err(_T("The content inside the tab is not a valid XML schema. Please provide a valid schema in the tab content or choose a different file."));
+			return 0;
 		}
+		return 1;
 	}
-	// TODO if the selected XML document is not a valid schema, then show an error message.
-	// TODO else 
-	;
 }
 
 void CVerifyXPathOnSchemaDlg::OnBnClickedVerifyxpath()
 {
 	this->UpdateData();
-	VerifyXPath();
+	if (IsSchemaValid() > 0) {
+		VerifyXPath();
+	}
 }
 
 void CVerifyXPathOnSchemaDlg::DoDataExchange(CDataExchange* pDX)

@@ -65,6 +65,8 @@ bool LibxmlWrapper::xslTransform(std::wstring xslfile, XSLTransformResultType* o
     return false;
 }
 
+#define SAFE_ATTRIB(var, expr) do {var = (expr); if (var == nullptr) goto CleanUp; } while(0);
+
 bool LibxmlWrapper::isXPathValidOnSchema(const std::wstring& schemaFilepath, const std::string& xpath) 
 {
     // TODO implement
@@ -75,11 +77,21 @@ bool LibxmlWrapper::isXPathValidOnSchema(const std::wstring& schemaFilepath, con
 
 bool LibxmlWrapper::isXPathValidOnSchema(const std::string& xpath) {
     // Verifies the XPath query on the schema provided as the XML content in the Notepad++ tab
-    return false;
+    xmlDocPtr doc = nullptr;
+    bool isValid = false;
+    const char* encoding = "UTF-8";
+
+    SAFE_ATTRIB(doc, xmlReadDoc((xmlChar*)this->content.c_str(), NULL, encoding, 0));
+    isValid = this->isValidSchema(doc);
+
+CleanUp:
+    if (doc) xmlFreeDoc(doc);
+
+    return isValid;
 }
 
 // I have trauma with defensive programming in C
-#define SAFE_ATTRIB(var, expr) do {var = (expr); if (var == nullptr) goto CleanUp; } while(0);
+
 
 bool LibxmlWrapper::isValidSchema()
 {
@@ -101,18 +113,23 @@ bool LibxmlWrapper::isValidSchema(LPCWSTR filePath, int filepathLength) {
     // Verify if the currently loaded XML file is a valid schema
     // TODO pick a different encoding for reading documents
 
+    char* filePathu8 = nullptr;
     xmlDocPtr doc = nullptr;
     bool isValid = false;
     const char* encoding = "UTF-8";
+    int xmlReadFlags = 0;
     
-    std::wstring filePathu16 = { filePath };
-    std::string filePathu8(filePathu16.begin(), filePathu16.end());
-    SAFE_ATTRIB(doc, xmlReadFile(filePathu8.c_str(), encoding, 0));
+    SAFE_ATTRIB(filePathu8, new char[filepathLength + 1]);
+    memset(filePathu8, '\0', sizeof(char) * (filepathLength + 1));
+    Report::UTF8FromUCS2(filePath, filepathLength, filePathu8, filepathLength);
+
+    SAFE_ATTRIB(doc, xmlReadFile(filePathu8, encoding, xmlReadFlags));
 
     isValid = this->isValidSchema(doc);
 
 CleanUp:
     if (doc) xmlFreeDoc(doc);
+    if (filePathu8) delete[] filePathu8;
     return isValid;
 }
 
@@ -125,6 +142,7 @@ bool LibxmlWrapper::isValidSchema(xmlDocPtr doc) {
     xmlSchemaValidCtxtPtr validSchemaCtxt = nullptr;
     const char* encoding = "UTF-8";
     bool isValid = false;
+    Report::clearLog();
     
     SAFE_ATTRIB(schemaParser, xmlSchemaNewDocParserCtxt(doc));
 
