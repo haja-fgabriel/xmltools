@@ -6,6 +6,7 @@
 #include <string>
 #include <locale>
 #include <codecvt>
+#include <memory>
 
 
 static xmlDocPtr CreateAndInitDOM(const std::string& filepath) {
@@ -65,38 +66,106 @@ bool LibxmlWrapper::xslTransform(std::wstring xslfile, XSLTransformResultType* o
     return false;
 }
 
+// I have trauma with defensive programming in C
 #define SAFE_ATTRIB(var, expr) do {var = (expr); if (var == nullptr) goto CleanUp; } while(0);
 
-bool LibxmlWrapper::isXPathValidOnSchema(const std::wstring& schemaFilepath, const std::string& xpath) 
+bool LibxmlWrapper::isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLength, LPCWSTR xpath, int xpathLength) 
 {
-    // TODO implement
-    // xmlSchemaParserCtxtPtr parserCtxt = xmlSchemaNewParserCtxt()
-    //xmlSchemaParse()
-    return false;
+    bool isValid = false;
+    xmlDocPtr doc = nullptr;
+    char* filePathu8 = nullptr;
+    const char* encoding = "UTF-8";
+    int flags = 0;
+    char* xpathu8 = nullptr;
+
+    // Convert the XPath query from UTF-16 encoding to UTF-8
+    SAFE_ATTRIB(xpathu8, new char[xpathLength + 1]);
+    Report::UTF8FromUCS2(xpath, xpathLength, xpathu8, xpathLength);
+
+    // Convert the path to the schema (XSD) file from UTF-16 encoding to UTF-8
+    SAFE_ATTRIB(filePathu8, new char[filepathLength + 1]);
+    Report::UTF8FromUCS2(schemaFilepath, filepathLength, filePathu8, filepathLength);
+
+    // Read the content of the XML schema file and parse it as XML
+    SAFE_ATTRIB(doc, xmlReadFile(filePathu8, encoding, flags));
+
+    // TODO return -1 for allocation errors
+    isValid = this->isXPathValidOnSchema(doc, xpathu8);
+
+ CleanUp:
+    if (doc) xmlFreeDoc(doc);
+    if (filePathu8) delete[] filePathu8;
+    if (xpathu8) delete[] xpathu8;
+    return isValid;
 }
 
-bool LibxmlWrapper::isXPathValidOnSchema(const std::string& xpath) {
+bool LibxmlWrapper::isXPathValidOnSchema(LPCWSTR xpath, int xpathLength) {
     // Verifies the XPath query on the schema provided as the XML content in the Notepad++ tab
     xmlDocPtr doc = nullptr;
     bool isValid = false;
+    char* xpathu8 = nullptr;
     const char* encoding = "UTF-8";
+    int flags = 0;
 
-    SAFE_ATTRIB(doc, xmlReadDoc((xmlChar*)this->content.c_str(), NULL, encoding, 0));
-    isValid = this->isValidSchema(doc);
+    // Convert the XPath query from UTF-16 encoding to UTF-8
+    SAFE_ATTRIB(xpathu8, new char[xpathLength + 1]);
+    Report::UTF8FromUCS2(xpath, xpathLength, xpathu8, xpathLength);
+
+    // Parse the current content as an XML document
+    SAFE_ATTRIB(doc, xmlReadDoc((xmlChar*)this->content.c_str(), nullptr, encoding, flags));
+
+    // TODO return -1 for allocation errors
+    isValid = this->isXPathValidOnSchema(doc, xpathu8);
 
 CleanUp:
     if (doc) xmlFreeDoc(doc);
+    if (xpathu8) delete[] xpathu8;
 
     return isValid;
 }
 
-// I have trauma with defensive programming in C
+bool LibxmlWrapper::isXPathValidOnSchema(xmlDocPtr doc, const char* xpath) {
+    // TODO pick a different encoding for reading documents
+    // TODO return -1 for allocation errors
+    xmlSchemaParserCtxtPtr schemaParser = nullptr;
+    xmlSchemaPtr schema = nullptr;
+    xmlSchemaValidCtxtPtr validSchemaCtxt = nullptr;
+    xmlSchemaVerifyXPathCtxtPtr verifyCtxt = nullptr;
+    const char* encoding = "UTF-8";
+    bool isValid = false;
+    Report::clearLog();
 
+    SAFE_ATTRIB(schemaParser, xmlSchemaNewDocParserCtxt(doc));
+
+    xmlSchemaSetParserErrors(schemaParser, Report::registerError, Report::registerWarn, nullptr);
+    SAFE_ATTRIB(schema, xmlSchemaParse(schemaParser));
+
+    xmlSchemaSetValidErrors(validSchemaCtxt, Report::registerError, Report::registerWarn, nullptr);
+    SAFE_ATTRIB(validSchemaCtxt, xmlSchemaNewValidCtxt(schema));
+
+    SAFE_ATTRIB(verifyCtxt, xmlSchemaNewVerifyXPathCtxt(validSchemaCtxt, (xmlChar*)xpath));
+
+    isValid = xmlSchemaVerifyXPath(verifyCtxt);
+
+CleanUp:
+    if (Report::getLog().length()) {
+        Report::_printf_err(Report::getLog());
+    }
+
+    if (verifyCtxt) xmlSchemaFreeVerifyXPathCtxt(verifyCtxt);
+    if (validSchemaCtxt) xmlSchemaFreeValidCtxt(validSchemaCtxt);
+    if (schema) xmlSchemaFree(schema);
+    if (schemaParser) xmlSchemaFreeParserCtxt(schemaParser);
+
+    return isValid;
+}
 
 bool LibxmlWrapper::isValidSchema()
 {
     // Verify if the currently loaded XML file is a valid schema
     // TODO pick a different encoding for reading documents
+    // TODO return -1 for allocation errors
+
     xmlDocPtr doc = nullptr;
     bool isValid = false;
     const char* encoding = "UTF-8";
@@ -112,6 +181,7 @@ CleanUp:
 bool LibxmlWrapper::isValidSchema(LPCWSTR filePath, int filepathLength) {
     // Verify if the currently loaded XML file is a valid schema
     // TODO pick a different encoding for reading documents
+    // TODO return -1 for allocation errors
 
     char* filePathu8 = nullptr;
     xmlDocPtr doc = nullptr;
@@ -137,6 +207,7 @@ bool LibxmlWrapper::isValidSchema(xmlDocPtr doc) {
     // Verify if the currently loaded XML file is a valid schema
 
     // TODO pick a different encoding for reading documents
+    // TODO return -1 for allocation errors
     xmlSchemaParserCtxtPtr schemaParser = nullptr;
     xmlSchemaPtr schema = nullptr;
     xmlSchemaValidCtxtPtr validSchemaCtxt = nullptr;

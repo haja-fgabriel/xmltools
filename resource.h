@@ -110,18 +110,17 @@
 #define IDI_NEXT                        2061
 #define ID_VERIFYXPATH                  2061
 #define IDI_NEXT_DM                     2062
-#define IDC_XPATHVERIFY_XMLNS           2062
 #define IDI_OPTIONS                     2063
-#define IDC_XMLNS_CHOOSE_TEXT           2063
 #define IDI_OPTIONS_DM                  2064
 #define IDC_CLEAR_XPATHVERIFY           2064
 #define IDI_PRETTYPRINT                 2065
-#define IDC_CLEAR_XPATHVERIFY_XMLNS     2065
 #define IDI_PRETTYPRINT_DM              2066
 #define IDC_XPATHVERIFY_CLOSE           2066
 #define IDI_PRETTYPRINTINDENTATTR       2067
+#define IDC_STATIC_HOWTOPICK            2067
 #define IDI_PRETTYPRINTINDENTATTR_DM    2068
 #define IDI_PRETTYPRINTINDENTONLY       2069
+#define IDC_STATIC_XPATHVERIFY_DESCRIPTION 2069
 #define IDI_IDI_PRETTYPRINTINDENTONLY_DM 2070
 #define IDI_PRETTYPRINTINDENTONLY_DM    2070
 #define IDI_PREV                        2071
@@ -135,6 +134,9 @@
 #define IDI_XSLTRANSFORM                2079
 #define IDI_XSLTRANSFORM_DM             2080
 #define IDD_XPATHVERIFY                 2081
+#define IDC_XPATHVERIFY_XMLNS           2082
+#define IDC_XMLNS_CHOOSE_TEXT           2083
+#define IDC_CLEAR_XPATHVERIFY_XMLNS     2084
 
 // Next default values for new objects
 // 
@@ -142,7 +144,7 @@
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NEXT_RESOURCE_VALUE        2084
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         2067
+#define _APS_NEXT_CONTROL_VALUE         2070
 #define _APS_NEXT_SYMED_VALUE           2000
 #endif
 #endif

@@ -9,8 +9,13 @@
 #include "LibxmlWrapper.h"
 #include "Report.h"
 
+#define _CRTDBG_MAP_ALLOC
 
 // CVerifyXPathOnSchemaDlg dialog
+
+static LPCWSTR gHowToUseWithFile = _T("An user-provided file will be used for verifying the XPath query for satisfiability.");
+static LPCWSTR gHowToUseWithoutFile = _T("The text in the currently opened tab will be used for verifying the XPath query for satisfiability.");
+static LPCWSTR gDescription = _T("The satisfiability of an XPath query represents whether exists any XML document valid on the given schema (XSD) that will give a non-empty result on running the query against it.");
 
 IMPLEMENT_DYNAMIC(CVerifyXPathOnSchemaDlg, CDialogEx)
 
@@ -25,6 +30,8 @@ CVerifyXPathOnSchemaDlg::CVerifyXPathOnSchemaDlg(CWnd* pParent /*=nullptr*/)
 	m_sXmlNamespace = _T("");
 	m_sFileToOpen = _T("");
 	m_bDoLoadFromFile = FALSE;
+	m_sHowToUse = gHowToUseWithoutFile;
+	m_sDescription = gDescription;
 }
 
 CVerifyXPathOnSchemaDlg::~CVerifyXPathOnSchemaDlg()
@@ -40,52 +47,112 @@ BEGIN_MESSAGE_MAP(CVerifyXPathOnSchemaDlg, CDialogEx)
 	ON_BN_CLICKED(IDC_CLEAR_XPATHVERIFY_XMLNS, &CVerifyXPathOnSchemaDlg::OnBnClickedClearXpathverifyXmlns)
 	ON_EN_CHANGE(IDC_XPATHVERIFY_XMLNS, &CVerifyXPathOnSchemaDlg::OnEnChangeXpathverifyXmlns)
 	ON_BN_CLICKED(IDC_XPATHVERIFY_CLOSE, &CVerifyXPathOnSchemaDlg::OnBnClickedXpathverifyClose)
+	ON_STN_CLICKED(IDC_STATIC_HOWTOPICK, &CVerifyXPathOnSchemaDlg::OnStnClickedStaticHowtopick)
 END_MESSAGE_MAP()
 
 
 // CVerifyXPathOnSchemaDlg message handlers
 
 int CVerifyXPathOnSchemaDlg::VerifyXPath() {
+	if (m_sXPathToVerify.GetLength() == 0) {
+		Report::_printf_err(_T("Please type in an XPath query."));
+		return (-2);
+	}
 	if (m_bDoLoadFromFile) {
-		
+		int retVal = 0;
+		LibxmlWrapper* libxmlWrapper = nullptr;
+		libxmlWrapper = new LibxmlWrapper("", 0);
+		if (!libxmlWrapper) {
+			Report::_printf_err(_T("Could not allocate memory for verifying if the XPath query is satisfiable."));
+			return (-1);
+		}
+		// TODO return -1 for allocation errors
+		retVal = (int)libxmlWrapper->isXPathValidOnSchema(m_sFileToOpen.GetString(), m_sFileToOpen.GetLength(), m_sXPathToVerify.GetString(), m_sXPathToVerify.GetLength());
+		delete libxmlWrapper;
+		return retVal;
 	}
 	else {
+		int retVal = 0;
+		char* data = nullptr;
+		LibxmlWrapper* libxmlWrapper = nullptr;
+		size_t length = 0;
 
+		if (GetTabContent(&data, &length) != 0) {
+			Report::_printf_err("Could not retrieve the content of the currently opened tab when verifying if the provided XPath query is satisifable on the schema.");
+			return (-1);
+		}
+		libxmlWrapper = new LibxmlWrapper(data, length);
+
+		// TODO return -1 for allocation errors
+		retVal = (int)libxmlWrapper->isXPathValidOnSchema(m_sXPathToVerify.GetString(), m_sXPathToVerify.GetLength());
+
+		if (libxmlWrapper) delete libxmlWrapper;
+		return retVal;
 	}
+	return 0;
+}
+
+int CVerifyXPathOnSchemaDlg::GetTabContent(char** data, size_t* currentLength) {
+	int currentEdit;
+	::SendMessage(nppData._nppHandle, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&currentEdit);
+	HWND hCurrentEditView = getCurrentHScintilla(currentEdit);
+
+	*currentLength = (size_t) ::SendMessage(hCurrentEditView, SCI_GETLENGTH, 0, 0);
+
+	*data = new char[*currentLength + sizeof(char)];
+	if (!*data) {
+		*currentLength = 0;
+		return -1;  // allocation error, abort check
+	}
+	memset(*data, '\0', *currentLength + sizeof(char));
+
+	::SendMessage(hCurrentEditView, SCI_GETTEXT, *currentLength + sizeof(char), reinterpret_cast<LPARAM>(*data));
+	
 	return 0;
 }
 
 int CVerifyXPathOnSchemaDlg::IsSchemaValid() {
 	if (m_bDoLoadFromFile) {
 		// Text is loaded from file, not provided in memory, hence the empty constructor arguments
+		int retVal = 1;
 		LibxmlWrapper* libxmlWrapper = new LibxmlWrapper("", 0);
+
+		if (!libxmlWrapper) {
+			Report::_printf_err(_T("Could not allocate memory for verifying if the schema is valid."));
+			return (-1);
+		}
 
 		if (!libxmlWrapper->isValidSchema(m_sFileToOpen.GetString(), m_sFileToOpen.GetLength())) {
 			Report::_printf_err(_T("The given file is not existing or it is not a valid XML schema."));
-			return (0);
+			retVal = (0);
 		}
-		return 1;
+		delete libxmlWrapper;
+		return retVal;
 	}
 	else {
-		int currentEdit;
-		::SendMessage(nppData._nppHandle, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&currentEdit);
-		HWND hCurrentEditView = getCurrentHScintilla(currentEdit);
+		char* data = nullptr;
+		size_t length = 0;
+		int retVal = 1;
 		
-		size_t currentLength = (size_t) ::SendMessage(hCurrentEditView, SCI_GETLENGTH, 0, 0);
+		if (GetTabContent(&data, &length) != 0) {
+			Report::_printf_err("Could not retrieve the content of the currently opened tab when verifying if it's a valid XML schema.");
+			return (-1);
+		}
 
-		char* data = new char[currentLength + sizeof(char)];
-		if (!data) return(-1);  // allocation error, abort check
-		memset(data, '\0', currentLength + sizeof(char));
-
-		::SendMessage(hCurrentEditView, SCI_GETTEXT, currentLength + sizeof(char), reinterpret_cast<LPARAM>(data));
-
-		LibxmlWrapper* libxmlWrapper = new LibxmlWrapper(data, currentLength);
+		LibxmlWrapper* libxmlWrapper = new LibxmlWrapper(data, length);
+		if (!libxmlWrapper) {
+			Report::_printf_err(_T("Could not allocate memory for verifying if the schema is valid."));
+			delete data;
+			return (-1);
+		}
 
 		if (!libxmlWrapper->isValidSchema()) {
 			Report::_printf_err(_T("The content inside the tab is not a valid XML schema. Please provide a valid schema in the tab content or choose a different file."));
-			return 0;
+			retVal = 0;
 		}
-		return 1;
+		delete libxmlWrapper;
+		delete data;
+		return retVal;
 	}
 }
 
@@ -95,6 +162,7 @@ void CVerifyXPathOnSchemaDlg::OnBnClickedVerifyxpath()
 	if (IsSchemaValid() > 0) {
 		VerifyXPath();
 	}
+	_CrtDumpMemoryLeaks();
 }
 
 void CVerifyXPathOnSchemaDlg::DoDataExchange(CDataExchange* pDX)
@@ -104,6 +172,8 @@ void CVerifyXPathOnSchemaDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_XPATHVERIFY_XMLNS, m_sXmlNamespace);
 	DDX_Text(pDX, IDC_LOADFILEPATH, m_sFileToOpen);
 	DDX_Check(pDX, IDC_DO_LOADFROMFILE, m_bDoLoadFromFile);
+	DDX_Text(pDX, IDC_STATIC_HOWTOPICK, m_sHowToUse);
+	DDX_Text(pDX, IDC_STATIC_XPATHVERIFY_DESCRIPTION, m_sDescription);
 }
 
 void CVerifyXPathOnSchemaDlg::OnBnClickedOpenschemafile()
@@ -118,6 +188,7 @@ void CVerifyXPathOnSchemaDlg::OnBnClickedDoLoadfromfile()
 	this->UpdateData();
 	GetDlgItem(IDC_LOADFILEPATH)->EnableWindow(m_bDoLoadFromFile);
 	GetDlgItem(IDC_OPENSCHEMAFILE)->EnableWindow(m_bDoLoadFromFile);
+	GetDlgItem(IDC_STATIC_HOWTOPICK)->SetWindowTextW(GetHowToUseText(m_bDoLoadFromFile));
 }
 
 CStringW CVerifyXPathOnSchemaDlg::ShowOpenFileDlg(CStringW filetypes) {
@@ -149,8 +220,20 @@ void CVerifyXPathOnSchemaDlg::OnEnChangeXpathverifyXmlns()
 	// TODO:  Add your control notification handler code here
 }
 
+LPCWSTR CVerifyXPathOnSchemaDlg::GetHowToUseText(BOOL getCustomFile)
+{
+	return (getCustomFile ? gHowToUseWithFile : gHowToUseWithoutFile);
+}
+
 
 void CVerifyXPathOnSchemaDlg::OnBnClickedXpathverifyClose()
 {
 	CDialogEx::OnCancel();
 }
+
+
+void CVerifyXPathOnSchemaDlg::OnStnClickedStaticHowtopick()
+{
+	// TODO: Add your control notification handler code here
+}
+

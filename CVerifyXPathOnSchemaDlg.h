@@ -1,6 +1,7 @@
 #pragma once
 #include "afxdialogex.h"
 #include "PluginInterface.h"
+#include <string>
 
 
 // CVerifyXPathOnSchemaDlg dialog
@@ -23,12 +24,17 @@ protected:
 	CStringW m_sXPathToVerify;
 	CStringW m_sXmlNamespace;
 	CStringW m_sFileToOpen;
+	CStringW m_sHowToUse;
+	CStringW m_sDescription;
+
 
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	CStringW ShowOpenFileDlg(CStringW filetypes);
 	HWND getCurrentHScintilla(int which);
 	int VerifyXPath();
 	int IsSchemaValid();
+	int GetTabContent(char** data, size_t* currentLength);
+	LPCWSTR GetHowToUseText(BOOL getCustomFile);
 
 	DECLARE_MESSAGE_MAP()
 public:
@@ -39,4 +45,5 @@ public:
 	afx_msg void OnBnClickedClearXpathverifyXmlns();
 	afx_msg void OnEnChangeXpathverifyXmlns();
 	afx_msg void OnBnClickedXpathverifyClose();
+	afx_msg void OnStnClickedStaticHowtopick();
 };

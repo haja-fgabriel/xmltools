@@ -18,10 +18,15 @@ public:
 	bool checkValidity(std::wstring schemaFilename = L"", std::wstring validationNamespace = L"");
 	std::vector<XPathResultEntryType> xpathEvaluate(std::wstring xpath, std::wstring ns = L"");
 	bool xslTransform(std::wstring xslfile, XSLTransformResultType* out, std::wstring options = L"", UniMode srcEncoding = UniMode::uniEnd);
-	bool isXPathValidOnSchema(const std::wstring& schemaFilepath, const std::string& xpath);
-	bool isXPathValidOnSchema(const std::string& xpath);
+	
+	bool isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLength, LPCWSTR xpath, int xpathLength);
+	bool isXPathValidOnSchema(LPCWSTR xpath, int xpathLength);
+
 	bool isValidSchema();
 	bool isValidSchema(LPCWSTR filePath, int filepathLength);
+
+protected:
+	bool isXPathValidOnSchema(xmlDocPtr doc, const char* xpath);
 	bool isValidSchema(xmlDocPtr doc);
 };
 
