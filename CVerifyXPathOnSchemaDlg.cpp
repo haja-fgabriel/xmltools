@@ -17,6 +17,12 @@ static LPCWSTR gHowToUseWithFile = _T("An user-provided file will be used for ve
 static LPCWSTR gHowToUseWithoutFile = _T("The text in the currently opened tab will be used for verifying the XPath query for satisfiability.");
 static LPCWSTR gDescription = _T("The satisfiability of an XPath query represents whether exists any XML document valid on the given schema (XSD) that will give a non-empty result on running the query against it.");
 
+static LPCTSTR gCaption = _T("XPath satisfiability check");
+static LPCTSTR gTextValid = _T("The given XPath query is satisfiable on the schema.");
+static LPCTSTR gTextInvalid = _T("The given XPath query is not satisfiable on the schema.");
+static LPCTSTR gTextError = _T("An error has occured when checking the satisfiability of the given XPath query.");
+static LPCTSTR gTextUnknown = _T("Unknown status code returned by libxmlWrapper->isXPathValidOnSchema.");
+
 IMPLEMENT_DYNAMIC(CVerifyXPathOnSchemaDlg, CDialogEx)
 
 HWND CVerifyXPathOnSchemaDlg::getCurrentHScintilla(int which) {
@@ -92,6 +98,30 @@ int CVerifyXPathOnSchemaDlg::VerifyXPath() {
 	return 0;
 }
 
+void CVerifyXPathOnSchemaDlg::ShowResultMessage(int retVal) 
+{
+	LPCTSTR text;
+	UINT iconType;
+
+	if (retVal == 1) {
+		text = gTextValid;
+		iconType = MB_ICONINFORMATION;
+	}
+	else if (retVal == 0) {
+		text = gTextInvalid;
+		iconType = MB_ICONINFORMATION;
+	}
+	else if (retVal < 0) {
+		text = gTextError;
+		iconType = MB_ICONERROR;
+	}
+	else {
+		text = gTextUnknown;
+		iconType = MB_ICONERROR;
+	}
+	::MessageBox(nppData._nppHandle, text, gCaption, MB_OK | iconType);
+}
+
 int CVerifyXPathOnSchemaDlg::GetTabContent(char** data, size_t* currentLength) {
 	int currentEdit;
 	::SendMessage(nppData._nppHandle, NPPM_GETCURRENTSCINTILLA, 0, (LPARAM)&currentEdit);
@@ -160,7 +190,9 @@ void CVerifyXPathOnSchemaDlg::OnBnClickedVerifyxpath()
 {
 	this->UpdateData();
 	if (IsSchemaValid() > 0) {
-		VerifyXPath();
+		int retVal;
+		retVal = VerifyXPath();
+		ShowResultMessage(retVal);
 	}
 	_CrtDumpMemoryLeaks();
 }

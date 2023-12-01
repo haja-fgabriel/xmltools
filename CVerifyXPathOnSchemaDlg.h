@@ -19,6 +19,9 @@ public:
 	enum { IDD = IDD_XPATHVERIFY };
 #endif
 
+private:
+	void ShowResultMessage(int retVal);
+
 protected:
 	BOOL m_bDoLoadFromFile;
 	CStringW m_sXPathToVerify;
