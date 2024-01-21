@@ -69,6 +69,11 @@ bool LibxmlWrapper::xslTransform(std::wstring xslfile, XSLTransformResultType* o
 // I have trauma with defensive programming in C
 #define SAFE_ATTRIB(var, expr) do {var = (expr); if (var == nullptr) goto CleanUp; } while(0);
 
+void __myCallback(void* data, xmlErrorPtr error) 
+{
+    Report::registerError(error->message);
+}
+
 int LibxmlWrapper::isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLength, LPCWSTR xpath, int xpathLength) 
 {
     int retVal = false;
@@ -136,14 +141,16 @@ int LibxmlWrapper::isXPathValidOnSchema(xmlDocPtr doc, const char* xpath) {
     Report::clearLog();
 
     SAFE_ATTRIB(schemaParser, xmlSchemaNewDocParserCtxt(doc));
-
     xmlSchemaSetParserErrors(schemaParser, Report::registerError, Report::registerWarn, nullptr);
+
     SAFE_ATTRIB(schema, xmlSchemaParse(schemaParser));
 
-    xmlSchemaSetValidErrors(validSchemaCtxt, Report::registerError, Report::registerWarn, nullptr);
     SAFE_ATTRIB(validSchemaCtxt, xmlSchemaNewValidCtxt(schema));
+    xmlSchemaSetValidErrors(validSchemaCtxt, Report::registerError, Report::registerWarn, nullptr);
 
     SAFE_ATTRIB(verifyCtxt, xmlSchemaNewVerifyXPathCtxt(validSchemaCtxt, (xmlChar*)xpath));
+    xmlSchemaSetVerifyXPathErrors(verifyCtxt, Report::registerError, Report::registerWarn, nullptr);
+    xmlSetStructuredErrorFunc(nullptr, __myCallback);
 
     retVal = xmlSchemaVerifyXPath(verifyCtxt);
 
