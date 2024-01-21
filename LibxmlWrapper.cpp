@@ -69,9 +69,9 @@ bool LibxmlWrapper::xslTransform(std::wstring xslfile, XSLTransformResultType* o
 // I have trauma with defensive programming in C
 #define SAFE_ATTRIB(var, expr) do {var = (expr); if (var == nullptr) goto CleanUp; } while(0);
 
-bool LibxmlWrapper::isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLength, LPCWSTR xpath, int xpathLength) 
+int LibxmlWrapper::isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLength, LPCWSTR xpath, int xpathLength) 
 {
-    bool isValid = false;
+    int retVal = false;
     xmlDocPtr doc = nullptr;
     char* filePathu8 = nullptr;
     const char* encoding = "UTF-8";
@@ -90,16 +90,16 @@ bool LibxmlWrapper::isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLen
     SAFE_ATTRIB(doc, xmlReadFile(filePathu8, encoding, flags));
 
     // TODO return -1 for allocation errors
-    isValid = this->isXPathValidOnSchema(doc, xpathu8);
+    retVal = this->isXPathValidOnSchema(doc, xpathu8);
 
  CleanUp:
     if (doc) xmlFreeDoc(doc);
     if (filePathu8) delete[] filePathu8;
     if (xpathu8) delete[] xpathu8;
-    return isValid;
+    return retVal;
 }
 
-bool LibxmlWrapper::isXPathValidOnSchema(LPCWSTR xpath, int xpathLength) {
+int LibxmlWrapper::isXPathValidOnSchema(LPCWSTR xpath, int xpathLength) {
     // Verifies the XPath query on the schema provided as the XML content in the Notepad++ tab
     xmlDocPtr doc = nullptr;
     bool isValid = false;
@@ -124,7 +124,7 @@ CleanUp:
     return isValid;
 }
 
-bool LibxmlWrapper::isXPathValidOnSchema(xmlDocPtr doc, const char* xpath) {
+int LibxmlWrapper::isXPathValidOnSchema(xmlDocPtr doc, const char* xpath) {
     // TODO pick a different encoding for reading documents
     // TODO return -1 for allocation errors
     xmlSchemaParserCtxtPtr schemaParser = nullptr;
@@ -132,7 +132,7 @@ bool LibxmlWrapper::isXPathValidOnSchema(xmlDocPtr doc, const char* xpath) {
     xmlSchemaValidCtxtPtr validSchemaCtxt = nullptr;
     xmlSchemaVerifyXPathCtxtPtr verifyCtxt = nullptr;
     const char* encoding = "UTF-8";
-    bool isValid = false;
+    int retVal = 0;
     Report::clearLog();
 
     SAFE_ATTRIB(schemaParser, xmlSchemaNewDocParserCtxt(doc));
@@ -145,7 +145,7 @@ bool LibxmlWrapper::isXPathValidOnSchema(xmlDocPtr doc, const char* xpath) {
 
     SAFE_ATTRIB(verifyCtxt, xmlSchemaNewVerifyXPathCtxt(validSchemaCtxt, (xmlChar*)xpath));
 
-    isValid = xmlSchemaVerifyXPath(verifyCtxt);
+    retVal = xmlSchemaVerifyXPath(verifyCtxt);
 
 CleanUp:
     if (Report::getLog().length()) {
@@ -157,7 +157,7 @@ CleanUp:
     if (schema) xmlSchemaFree(schema);
     if (schemaParser) xmlSchemaFreeParserCtxt(schemaParser);
 
-    return isValid;
+    return retVal;
 }
 
 bool LibxmlWrapper::isValidSchema()
