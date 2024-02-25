@@ -71,7 +71,12 @@ bool LibxmlWrapper::xslTransform(std::wstring xslfile, XSLTransformResultType* o
 
 void __myCallback(void* data, xmlErrorPtr error) 
 {
-    Report::registerError(error->message);
+    if (error->level < XML_ERR_ERROR) {
+        Report::registerWarn(error->message);
+    }
+    else {
+        Report::registerError(error->message);
+    }
 }
 
 int LibxmlWrapper::isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLength, LPCWSTR xpath, int xpathLength) 
