@@ -2,6 +2,7 @@
 #include "afxdialogex.h"
 #include "PluginInterface.h"
 #include <string>
+#include "CVerifyXPathMessageBox.h"
 
 
 // CVerifyXPathOnSchemaDlg dialog
@@ -29,7 +30,7 @@ protected:
 	CStringW m_sFileToOpen;
 	CStringW m_sHowToUse;
 	CStringW m_sDescription;
-
+	CVerifyXPathMessageBox* m_pMessageBox;
 
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	CStringW ShowOpenFileDlg(CStringW filetypes);
@@ -49,4 +50,6 @@ public:
 	afx_msg void OnEnChangeXpathverifyXmlns();
 	afx_msg void OnBnClickedXpathverifyClose();
 	afx_msg void OnStnClickedStaticHowtopick();
+	afx_msg void OnBnClickedXpathverifyClose2();
+	afx_msg void OnBnClickedXpathverifyViewlogs();
 };

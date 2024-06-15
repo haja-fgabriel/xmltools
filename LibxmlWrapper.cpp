@@ -23,8 +23,7 @@ LibxmlWrapper::~LibxmlWrapper()
 
 int LibxmlWrapper::getCapabilities()
 {
-    throw std::exception("Not implemented yet");
-    return 0;
+    return XmlCapabilityType::GET_ERROR_DETAILS;
 }
 
 bool LibxmlWrapper::checkSyntax()
@@ -66,11 +65,30 @@ bool LibxmlWrapper::xslTransform(std::wstring xslfile, XSLTransformResultType* o
     return false;
 }
 
-// I have trauma with defensive programming in C
-#define SAFE_ATTRIB(var, expr) do {var = (expr); if (var == nullptr) goto CleanUp; } while(0);
-
-void __myCallback(void* data, xmlErrorPtr error) 
+void LibxmlWrapper::addError(ErrorEntryType error)
 {
+    errors.push_back(error);
+}
+
+// I have trauma with defensive programming in C
+#define SAFE_ATTRIB(var, expr) do {var = (expr); if (var == nullptr) { goto CleanUp; } } while(0);
+
+extern "C" void __myCallback(void* data, xmlErrorPtr error)
+{
+    LibxmlWrapper* wrapper = (LibxmlWrapper*)data;
+
+    std::wstring errorMessage = (error->level < XML_ERR_ERROR) ? L"Warn" : L"Error";
+
+    // Report::UTF8FromUCS2(error->message, strlen(error->message), xpathu8, xpathLength);
+    wchar_t* message = Report::castChar(error->message, UniMode::uniUTF8);
+    if (message) {
+        errorMessage += L":" + std::wstring(message);
+        delete[] message;
+    }
+
+    // TODO customize error
+    wrapper->addError({false, 0, 0, 0, errorMessage});
+
     if (error->level < XML_ERR_ERROR) {
         Report::registerWarn(error->message);
     }
@@ -155,7 +173,7 @@ int LibxmlWrapper::isXPathValidOnSchema(xmlDocPtr doc, const char* xpath) {
 
     SAFE_ATTRIB(verifyCtxt, xmlSchemaNewVerifyXPathCtxt(validSchemaCtxt, (xmlChar*)xpath));
     xmlSchemaSetVerifyXPathErrors(verifyCtxt, Report::registerError, Report::registerWarn, nullptr);
-    xmlSetStructuredErrorFunc(nullptr, __myCallback);
+    xmlSetStructuredErrorFunc(this, __myCallback);
 
     retVal = xmlSchemaVerifyXPath(verifyCtxt);
 

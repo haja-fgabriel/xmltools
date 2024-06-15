@@ -45,10 +45,12 @@ CVerifyXPathOnSchemaDlg::CVerifyXPathOnSchemaDlg(CWnd* pParent /*=nullptr*/)
 	m_bDoLoadFromFile = FALSE;
 	m_sHowToUse = gHowToUseWithoutFile;
 	m_sDescription = gDescription;
+	m_pMessageBox = new CVerifyXPathMessageBox(this);
 }
 
 CVerifyXPathOnSchemaDlg::~CVerifyXPathOnSchemaDlg()
 {
+	delete m_pMessageBox;
 }
 
 
@@ -61,6 +63,7 @@ BEGIN_MESSAGE_MAP(CVerifyXPathOnSchemaDlg, CDialogEx)
 	ON_EN_CHANGE(IDC_XPATHVERIFY_XMLNS, &CVerifyXPathOnSchemaDlg::OnEnChangeXpathverifyXmlns)
 	ON_BN_CLICKED(IDC_XPATHVERIFY_CLOSE, &CVerifyXPathOnSchemaDlg::OnBnClickedXpathverifyClose)
 	ON_STN_CLICKED(IDC_STATIC_HOWTOPICK, &CVerifyXPathOnSchemaDlg::OnStnClickedStaticHowtopick)
+	ON_BN_CLICKED(IDC_XPATHVERIFY_VIEWLOGS, &CVerifyXPathOnSchemaDlg::OnBnClickedXpathverifyViewlogs)
 END_MESSAGE_MAP()
 
 
@@ -102,6 +105,9 @@ int CVerifyXPathOnSchemaDlg::VerifyXPath() {
 		retVal = (int)libxmlWrapper->isXPathValidOnSchema(
 			m_sXPathToVerify.GetString(), m_sXPathToVerify.GetLength());
 	}
+
+	m_pMessageBox->AddAll(libxmlWrapper->getLastErrors());
+
 	if (libxmlWrapper) {
 		delete libxmlWrapper;
 	}
@@ -293,3 +299,10 @@ void CVerifyXPathOnSchemaDlg::OnStnClickedStaticHowtopick()
 	// TODO: Add your control notification handler code here
 }
 
+
+
+void CVerifyXPathOnSchemaDlg::OnBnClickedXpathverifyViewlogs()
+{
+	m_pMessageBox->DoModal();
+	// TODO: Add your control notification handler code here
+}

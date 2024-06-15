@@ -24,6 +24,7 @@ public:
 
 	bool isValidSchema();
 	bool isValidSchema(LPCWSTR filePath, int filepathLength);
+	void addError(ErrorEntryType error);
 
 protected:
 	int isXPathValidOnSchema(xmlDocPtr doc, const char* xpath);
