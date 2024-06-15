@@ -24,12 +24,12 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
 // Dialog
 //
 
-IDD_XPATHVERIFY DIALOGEX 0, 0, 389, 138
+IDD_XPATHVERIFY DIALOGEX 0, 0, 389, 145
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Verify XPath query on schema"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
 BEGIN
-    DEFPUSHBUTTON   "Verify",ID_VERIFYXPATH,332,117,50,14
+    DEFPUSHBUTTON   "Verify",ID_VERIFYXPATH,273,124,50,14
     LTEXT           "XPath query to verify...",IDC_STATIC,7,27,95,8
     EDITTEXT        IDC_XPATHVERIFY_QUERY,7,38,319,13,ES_AUTOHSCROLL
     CONTROL         "Use the XML schema (XSD) from another file?",IDC_DO_LOADFROMFILE,
@@ -37,13 +37,25 @@ BEGIN
     EDITTEXT        IDC_LOADFILEPATH,53,93,272,13,ES_AUTOHSCROLL | WS_DISABLED
     LTEXT           "Path to file",IDC_STATIC,7,95,36,8
     PUSHBUTTON      "Open...",IDC_OPENSCHEMAFILE,332,93,50,14,WS_DISABLED
-    LTEXT           "Text to add for explaining how to pick the XML schema",IDC_STATIC_HOWTOPICK,7,116,262,15
+    LTEXT           "Text to add for explaining how to pick the XML schema",IDC_STATIC_HOWTOPICK,7,111,199,26
     PUSHBUTTON      "Clear",IDC_CLEAR_XPATHVERIFY,332,37,50,14
-    PUSHBUTTON      "Cancel",IDC_XPATHVERIFY_CLOSE,274,117,50,14
+    PUSHBUTTON      "Cancel",IDC_XPATHVERIFY_CLOSE,332,124,50,14
     PUSHBUTTON      "Clear",IDC_CLEAR_XPATHVERIFY_XMLNS,332,63,50,14,WS_DISABLED
     EDITTEXT        IDC_XPATHVERIFY_XMLNS,7,63,319,14,ES_AUTOHSCROLL | WS_DISABLED
     LTEXT           "XML namespace",IDC_XMLNS_CHOOSE_TEXT,7,53,54,8
     LTEXT           "Static",IDC_STATIC_XPATHVERIFY_DESCRIPTION,7,7,375,18
+    PUSHBUTTON      "View logs...",IDC_XPATHVERIFY_VIEWLOGS,214,124,50,14
+END
+
+IDD_XPATHVERIFY_LOG DIALOGEX 0, 0, 408, 201
+STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Error messages"
+FONT 8, "MS Shell Dlg", 400, 0, 0x1
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,297,180,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,351,180,50,14
+    CONTROL         "",IDC_LIST_XPATHV_MESSAGES,"SysListView32",LVS_REPORT | LVS_SINGLESEL | LVS_ALIGNLEFT | LVS_NOSORTHEADER | WS_BORDER | WS_TABSTOP,7,7,394,168
+    PUSHBUTTON      "Clear",IDC_LIST_XPATHV_CLEAR,7,180,50,14
 END
 
 
@@ -60,7 +72,15 @@ BEGIN
         LEFTMARGIN, 7
         RIGHTMARGIN, 382
         TOPMARGIN, 7
-        BOTTOMMARGIN, 131
+        BOTTOMMARGIN, 138
+    END
+
+    IDD_XPATHVERIFY_LOG, DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 401
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 194
     END
 END
 #endif    // APSTUDIO_INVOKED
@@ -72,6 +92,11 @@ END
 //
 
 IDD_XPATHVERIFY AFX_DIALOG_LAYOUT
+BEGIN
+    0
+END
+
+IDD_XPATHVERIFY_LOG AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
@@ -263,44 +288,6 @@ IDI_XSLTRANSFORM_DM     ICON                    "res\\XslTransform_DM.ico"
 LANGUAGE LANG_FRENCH, SUBLANG_FRENCH_SWISS
 #pragma code_page(1252)
 
-#ifdef APSTUDIO_INVOKED
-/////////////////////////////////////////////////////////////////////////////
-//
-// TEXTINCLUDE
-//
-
-1 TEXTINCLUDE 
-BEGIN
-    "resource.h\0"
-END
-
-2 TEXTINCLUDE 
-BEGIN
-    "#include ""afxres.h""\r\n"
-    "\0"
-END
-
-3 TEXTINCLUDE 
-BEGIN
-    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
-    "#define _AFX_NO_OLE_RESOURCES\r\n"
-    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
-    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
-    "\r\n"
-    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"
-    "#ifdef _WIN32\r\n"
-    "LANGUAGE 12, 1\r\n"
-    "#pragma code_page(1252)\r\n"
-    "#endif //_WIN32\r\n"
-    "#include ""res\\XMLTools.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
-    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"
-    "#endif\r\n"
-    "\0"
-END
-
-#endif    // APSTUDIO_INVOKED
-
-
 /////////////////////////////////////////////////////////////////////////////
 //
 // Dialog
@@ -388,7 +375,7 @@ BEGIN
     CTEXT           "These libraries are available in the subfolder ""ext_libs"" of the xmltools zip archive.",IDC_STATIC,7,62,167,29
 END
 
-IDD_ABOUTBOX DIALOGEX 0, 0, 193, 68
+IDD_ABOUTBOX DIALOGEX 0, 0, 193, 116
 STYLE DS_SETFONT | DS_MODALFRAME | DS_FIXEDSYS | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "XML Tools"
 FONT 8, "MS Shell Dlg", 400, 0, 0x1
@@ -396,8 +383,8 @@ BEGIN
     DEFPUSHBUTTON   "OK",IDOK,136,30,50,19
     CTEXT           "IDC_ABOUTTEXT",IDC_ABOUTTEXT,7,7,124,40
     PUSHBUTTON      "Donate",IDC_BUTTON1,136,7,50,19
-    LTEXT           "Home page:",IDC_STATIC,7,53,40,8
-    CONTROL         "<a>SysLink1</a>",IDC_LNKHOMEPAGE,"SysLink",WS_TABSTOP,54,53,132,8
+    LTEXT           "Home page:",IDC_STATIC,7,101,40,8
+    CONTROL         "<a>SysLink1</a>",IDC_LNKHOMEPAGE,"SysLink",WS_TABSTOP,54,101,132,8
 END
 
 IDD_OPTIONS DIALOGEX 0, 0, 403, 395
@@ -506,7 +493,7 @@ BEGIN
         RIGHTMARGIN, 186
         VERTGUIDE, 54
         TOPMARGIN, 7
-        BOTTOMMARGIN, 61
+        BOTTOMMARGIN, 109
         HORZGUIDE, 67
     END
 
@@ -590,6 +577,44 @@ IDD_ABOUTBOX AFX_DIALOG_LAYOUT
 BEGIN
     0
 END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE 
+BEGIN
+    "#define _AFX_NO_SPLITTER_RESOURCES\r\n"
+    "#define _AFX_NO_OLE_RESOURCES\r\n"
+    "#define _AFX_NO_TRACKER_RESOURCES\r\n"
+    "#define _AFX_NO_PROPERTY_RESOURCES\r\n"
+    "\r\n"
+    "#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_FRA)\r\n"
+    "#ifdef _WIN32\r\n"
+    "LANGUAGE 12, 1\r\n"
+    "#pragma code_page(1252)\r\n"
+    "#endif //_WIN32\r\n"
+    "#include ""res\\XMLTools.rc2""  // non-Microsoft Visual C++ edited resources\r\n"
+    "#include ""l.fra\\afxres.rc""          // Standard components\r\n"
+    "#endif\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
 
 
 /////////////////////////////////////////////////////////////////////////////

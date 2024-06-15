@@ -105,6 +105,9 @@
     <ClCompile Include="CVerifyXPathOnSchemaDlg.cpp">
       <Filter>Dialogs</Filter>
     </ClCompile>
+    <ClCompile Include="CVerifyXPathMessageBox.cpp">
+      <Filter>Dialogs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <None Include="XMLTools.def">
@@ -194,6 +197,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="CVerifyXPathOnSchemaDlg.h">
+      <Filter>Dialogs</Filter>
+    </ClInclude>
+    <ClInclude Include="CVerifyXPathMessageBox.h">
       <Filter>Dialogs</Filter>
     </ClInclude>
   </ItemGroup>
