@@ -28,10 +28,6 @@ void CVerifyXPathMessageBox::DoDataExchange(CDataExchange* pDX)
 	CListCtrl* listresults = (CListCtrl*)this->GetDlgItem(IDC_LIST_XPATHV_MESSAGES);
 	listresults->DeleteAllItems();
 
-	for (auto& err : m_listErrors) {
-                             /* wtf                                             */
-		AddItem(listresults, std::get<0>(err), std::get<1>(err), std::get<2>(err));
-	}
 }
 
 BOOL CVerifyXPathMessageBox::OnInitDialog()
@@ -39,10 +35,15 @@ BOOL CVerifyXPathMessageBox::OnInitDialog()
 	CDialog::OnInitDialog();
 	CListCtrl* listresults = (CListCtrl*)this->GetDlgItem(IDC_LIST_XPATHV_MESSAGES);
 
-	listresults->InsertColumn(0, L"Context", LVCFMT_LEFT, 400);
-	listresults->InsertColumn(1, L"Level", LVCFMT_LEFT, 400);
+	listresults->InsertColumn(0, L"Context", LVCFMT_LEFT, 100);
+	listresults->InsertColumn(1, L"Level", LVCFMT_LEFT, 100);
 	listresults->InsertColumn(2, L"Message", LVCFMT_LEFT, 470);
 	listresults->DeleteAllItems();
+
+	for (auto& err : m_listErrors) {
+		/* wtf                                             */
+		AddItem(listresults, std::get<0>(err), std::get<1>(err), std::get<2>(err));
+	}
 
 	return FALSE;
 }
@@ -51,34 +52,9 @@ BOOL CVerifyXPathMessageBox::OnInitDialog()
 void CVerifyXPathMessageBox::AddItem(CListCtrl* list, CStringW context, CStringW level, CStringW message)
 {
 	int idx = list->GetItemCount();
-	BOOL isDone = FALSE;
-	BOOL ret1, ret2, ret3;
-	BOOL bIsVisible = FALSE;
-	BOOL bIsEnsuredVisible = FALSE;
-	int err1, err2, err3;
-	ret1 = list->InsertItem(idx, context);
-	bIsEnsuredVisible = list->EnsureVisible(idx, TRUE);
-
-	CRect rect;
-	CRect itemRect;
-	DWORD dwStyle = list->GetStyle();
-
-	list->GetClientRect(&rect);
-	list->GetItemRect(idx, &itemRect, LVIR_BOUNDS);
-	
-	bool bIsClientTooSmall = (rect.Width() <= 0 || rect.Height() <= 0);
-	bool bIsItemInRect = (rect.PtInRect(itemRect.TopLeft()) && rect.PtInRect(itemRect.BottomRight()));
-	bool bIsInvalidStyle = ((dwStyle & LVS_TYPEMASK) != LVS_REPORT && (dwStyle & LVS_TYPEMASK) != LVS_LIST);
-
-	bIsVisible = list->IsItemVisible(idx);
-	err1 = GetLastError();
-	//ret2 = list->SetItemText(idx, 1, level);
-	err2 = GetLastError();
-	//ret3 = list->SetItemText(idx, 2, message);
-	err3 = GetLastError();
-	int itemCount = list->GetItemCount();
-	// list->Update(idx);
-	return;
+	list->InsertItem(idx, context);
+	list->SetItemText(idx, 1, level);
+	list->SetItemText(idx, 2, message);
 }
 
 void CVerifyXPathMessageBox::AddAll(const std::vector<ErrorEntryType>& errors)
