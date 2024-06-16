@@ -12,7 +12,7 @@ public:
 	CVerifyXPathMessageBox(CWnd* pParent = nullptr);   // standard constructor
 	virtual ~CVerifyXPathMessageBox();
 
-	void AddAll(const std::vector<ErrorEntryType>& errors);
+	void AddAll(const std::vector<LoggingEntryType>& errors);
 	void AddItem(CListCtrl* list, CStringW context, CStringW level, CStringW message);
 	void ClearList();
 

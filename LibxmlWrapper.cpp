@@ -65,7 +65,7 @@ bool LibxmlWrapper::xslTransform(std::wstring xslfile, XSLTransformResultType* o
     return false;
 }
 
-void LibxmlWrapper::addError(ErrorEntryType error)
+void LibxmlWrapper::addError(LoggingEntryType error)
 {
     errors.push_back(error);
 }
@@ -77,17 +77,20 @@ extern "C" void __myCallback(void* data, xmlErrorPtr error)
 {
     LibxmlWrapper* wrapper = (LibxmlWrapper*)data;
 
-    std::wstring errorMessage = (error->level < XML_ERR_ERROR) ? L"Warn" : L"Error";
+    std::wstring context = L"";
+    std::wstring level = (error->level < XML_ERR_ERROR) ? L"Warn" : L"Error";
+    std::wstring message;
 
-    // Report::UTF8FromUCS2(error->message, strlen(error->message), xpathu8, xpathLength);
-    wchar_t* message = Report::castChar(error->message, UniMode::uniUTF8);
-    if (message) {
-        errorMessage += L":" + std::wstring(message);
-        delete[] message;
+    wchar_t* lpwszMessage = Report::castChar(error->message, UniMode::uniUTF8);
+    if (lpwszMessage) {
+        message.assign(lpwszMessage);
+    }
+    else {
+        message = L"Unknown";
     }
 
     // TODO customize error
-    wrapper->addError({false, 0, 0, 0, errorMessage});
+    wrapper->addError({context, level, message});
 
     if (error->level < XML_ERR_ERROR) {
         Report::registerWarn(error->message);

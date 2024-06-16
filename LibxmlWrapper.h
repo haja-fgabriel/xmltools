@@ -4,7 +4,7 @@
 #include <string>
 #include "libxml/xmlschemas.h"
 
-class LibxmlWrapper : public XmlWrapperInterface
+class LibxmlWrapper : public XmlWrapperInterface<LoggingEntryType>
 {
 	std::string content;
 	size_t filepathLength;
@@ -24,7 +24,7 @@ public:
 
 	bool isValidSchema();
 	bool isValidSchema(LPCWSTR filePath, int filepathLength);
-	void addError(ErrorEntryType error);
+	void addError(LoggingEntryType error);
 
 protected:
 	int isXPathValidOnSchema(xmlDocPtr doc, const char* xpath);

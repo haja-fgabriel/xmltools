@@ -41,8 +41,9 @@ BOOL CVerifyXPathMessageBox::OnInitDialog()
 	listresults->DeleteAllItems();
 
 	for (auto& err : m_listErrors) {
-		/* wtf                                             */
-		AddItem(listresults, std::get<0>(err), std::get<1>(err), std::get<2>(err));
+		AddItem(listresults, std::get<0>(err), 
+							 std::get<1>(err), 
+							 std::get<2>(err));
 	}
 
 	return FALSE;
@@ -57,16 +58,17 @@ void CVerifyXPathMessageBox::AddItem(CListCtrl* list, CStringW context, CStringW
 	list->SetItemText(idx, 2, message);
 }
 
-void CVerifyXPathMessageBox::AddAll(const std::vector<ErrorEntryType>& errors)
+void CVerifyXPathMessageBox::AddAll(const std::vector<LoggingEntryType>& errors)
 {
 	m_listErrors.clear();
 	m_listErrors.resize(errors.size());
-	std::transform(errors.begin(), errors.end(), m_listErrors.begin(), [&](const ErrorEntryType& err) {
-		const CStringW context = L"todo_extractFromStruct";
-		const CStringW level = L"todo_extractFromStruct";
-		CStringW reason = CStringW(err.reason.c_str(), err.reason.size());
-		return std::make_tuple(context, level, reason);
-	});
+	auto castToCStringW = [&](const LoggingEntryType& entry) {
+		const CStringW context = CStringW(entry.context.c_str(), entry.context.size());
+		const CStringW level = CStringW(entry.level.c_str(), entry.level.size());
+		const CStringW message = CStringW(entry.message.c_str(), entry.message.size());
+		return std::make_tuple(context, level, message);
+	};
+	std::transform(errors.begin(), errors.end(), m_listErrors.begin(), castToCStringW);
 }	
 
 void CVerifyXPathMessageBox::ClearList()

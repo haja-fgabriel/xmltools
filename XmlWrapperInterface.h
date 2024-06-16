@@ -28,6 +28,12 @@ struct ErrorEntryType {
     std::wstring reason; // error description
 };
 
+struct LoggingEntryType {
+    std::wstring context = L""; // Context of logging entry
+    std::wstring level;         // Level used in logging
+    std::wstring message;       // Message from logger
+};
+
 struct ErrorEntryDesc {
     HWND view;
     bool positioned;
@@ -82,9 +88,10 @@ struct XmlWrapperOptionType {
 * an XML-API wrapper.
 */
 
+template<typename GenericEntryType = ErrorEntryType>
 class XmlWrapperInterface {
 protected:
-    std::vector<ErrorEntryType> errors;
+    std::vector<GenericEntryType> errors;
 
     // A map with wrapper options
     std::map<std::string, XmlWrapperOptionType> options;
@@ -152,7 +159,7 @@ public:
     * Get errors of last executed action
     * @return A vector of errors descriptions
     */
-    std::vector<ErrorEntryType> getLastErrors() {
+    std::vector<GenericEntryType> getLastErrors() {
         return this->errors;
     }
 

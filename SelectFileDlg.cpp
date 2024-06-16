@@ -85,7 +85,8 @@ void CSelectFileDlg::OnBtnExploreXSDFile() {
 
             str.assign((std::istreambuf_iterator<char>(t)), std::istreambuf_iterator<char>());
 
-            XmlWrapperInterface* wrapper = new MSXMLWrapper(str.c_str(), str.size());
+            // TODO revert to XMLWrapperInterface* after figuring out conversion to a better logging convention
+            MSXMLWrapper* wrapper = new MSXMLWrapper(str.c_str(), str.size());
             std::vector<XPathResultEntryType> nodes = wrapper->xpathEvaluate(L"/xs:schema/@targetNamespace", L"xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"");
 
             if (nodes.size() == 1) {

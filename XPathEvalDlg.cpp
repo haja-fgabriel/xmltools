@@ -99,7 +99,8 @@ int CXPathEvalDlg::execute_xpath_expression(CStringW xpathExpr) {
 
     ::SendMessage(hCurrentEditView, SCI_GETTEXT, currentLength + sizeof(char), reinterpret_cast<LPARAM>(data));
 
-    XmlWrapperInterface* wrapper = new MSXMLWrapper(data, currentLength);
+    // TODO revert to XMLWrapperInterface* after figuring out conversion to a better logging convention
+    MSXMLWrapper* wrapper = new MSXMLWrapper(data, currentLength);
     delete[] data; data = NULL;
 
     std::vector<XPathResultEntryType> nodes = wrapper->xpathEvaluate(xpathExpr.GetString(), m_sNamespace.GetString());
