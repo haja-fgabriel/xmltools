@@ -25,8 +25,8 @@ static LPCTSTR gCaption = _T("XPath satisfiability check");
 static LPCTSTR gTextValid = _T("The given XPath query is satisfiable on the schema.");
 static LPCTSTR gTextInvalid = _T("The given XPath query is not "
 	"satisfiable on the schema.");
-static LPCTSTR gTextError = _T("An error has occured when checking the "
-	"satisfiability of the given XPath query.");
+static LPCTSTR gTextError = _T("One or more errors have occured when checking the "
+	"satisfiability of the given XPath query. Click OK to view more details.");
 static LPCTSTR gTextUnknown = _T("Unknown status code returned by "
 	"libxmlWrapper->isXPathValidOnSchema.");
 
@@ -135,7 +135,13 @@ void CVerifyXPathOnSchemaDlg::ShowResultMessage(int retVal)
 		text = gTextUnknown;
 		iconType = MB_ICONERROR;
 	}
-	::MessageBox(nppData._nppHandle, text, gCaption, MB_OK | iconType);
+
+	// TODO in case of error or unknown, ask user if he wants to list errors.
+	 ::MessageBox(nppData._nppHandle, text, gCaption, MB_OK | iconType);
+	 if (retVal > 1 || retVal < 0) {
+		 m_pMessageBox->DoModal();
+	 }
+	// Report::_printf_custom(nppData._nppHandle, text, gCaption, MB_OK | iconType, [] {});
 }
 
 int CVerifyXPathOnSchemaDlg::GetTabContent(char** data, size_t* currentLength) {

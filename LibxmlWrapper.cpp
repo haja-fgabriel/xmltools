@@ -92,12 +92,12 @@ extern "C" void __myCallback(void* data, xmlErrorPtr error)
     // TODO customize error
     wrapper->addError({context, level, message});
 
-    if (error->level < XML_ERR_ERROR) {
-        Report::registerWarn(error->message);
-    }
-    else {
-        Report::registerError(error->message);
-    }
+    //if (error->level < XML_ERR_ERROR) {
+    //    Report::registerWarn(error->message);
+    //}
+    //else {
+    //    Report::registerError(error->message);
+    //}
 }
 
 int LibxmlWrapper::isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLength, LPCWSTR xpath, int xpathLength) 
