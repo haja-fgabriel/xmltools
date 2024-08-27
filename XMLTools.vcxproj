@@ -328,6 +328,7 @@
   <ItemGroup>
     <ClCompile Include="AboutBoxDlg.cpp" />
     <ClCompile Include="CMyPropertyGridCtrl.cpp" />
+    <ClCompile Include="CVerifyXPathDebug.cpp" />
     <ClCompile Include="CVerifyXPathMessageBox.cpp" />
     <ClCompile Include="CVerifyXPathOnSchemaDlg.cpp" />
     <ClCompile Include="Debug.cpp" />
@@ -374,6 +375,7 @@
     <ClInclude Include="AboutBoxDlg.h" />
     <ClInclude Include="CMyPropertyGridCtrl.h" />
     <ClInclude Include="Config.h" />
+    <ClInclude Include="CVerifyXPathDebug.h" />
     <ClInclude Include="CVerifyXPathMessageBox.h" />
     <ClInclude Include="CVerifyXPathOnSchemaDlg.h" />
     <ClInclude Include="Debug.h" />
@@ -392,6 +394,7 @@
     <ClInclude Include="ScintillaDoc.h" />
     <ClInclude Include="Sci_Position.h" />
     <ClInclude Include="StdAfx.h" />
+    <ClInclude Include="VerifyXPathMessages.h" />
     <ClInclude Include="XMLTools.h" />
     <ClInclude Include="HowtoUseDlg.h" />
     <ClInclude Include="InputDlg.h" />

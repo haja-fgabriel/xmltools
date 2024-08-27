@@ -3,6 +3,7 @@
 #include "PluginInterface.h"
 #include <string>
 #include "CVerifyXPathMessageBox.h"
+#include "CVerifyXPathDebug.h"
 
 
 // CVerifyXPathOnSchemaDlg dialog
@@ -31,6 +32,7 @@ protected:
 	CStringW m_sHowToUse;
 	CStringW m_sDescription;
 	CVerifyXPathMessageBox* m_pMessageBox;
+	CVerifyXPathDebug* m_pDebugWnd;
 
 	virtual void DoDataExchange(CDataExchange* pDX);    // DDX/DDV support
 	CStringW ShowOpenFileDlg(CStringW filetypes);

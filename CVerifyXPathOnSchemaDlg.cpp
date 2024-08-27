@@ -8,27 +8,12 @@
 #include "CVerifyXPathOnSchemaDlg.h"
 #include "LibxmlWrapper.h"
 #include "Report.h"
+#include "VerifyXPathMessages.h"
 
 #define _CRTDBG_MAP_ALLOC
 
 // CVerifyXPathOnSchemaDlg dialog
 
-static LPCWSTR gHowToUseWithFile = _T("An user-provided file will be used for "
-	"verifying the XPath query for satisfiability.");
-static LPCWSTR gHowToUseWithoutFile = _T("The text in the currently opened tab"
-	" will be used for verifying the XPath query for satisfiability.");
-static LPCWSTR gDescription = _T("The satisfiability of an XPath query "
-	"represents whether exists any XML document valid on the given schema "
-	"(XSD) that will give a non-empty result on running the query against it.");
-
-static LPCTSTR gCaption = _T("XPath satisfiability check");
-static LPCTSTR gTextValid = _T("The given XPath query is satisfiable on the schema.");
-static LPCTSTR gTextInvalid = _T("The given XPath query is not "
-	"satisfiable on the schema.");
-static LPCTSTR gTextError = _T("One or more errors have occured when checking the "
-	"satisfiability of the given XPath query. Click OK to view more details.");
-static LPCTSTR gTextUnknown = _T("Unknown status code returned by "
-	"libxmlWrapper->isXPathValidOnSchema.");
 
 IMPLEMENT_DYNAMIC(CVerifyXPathOnSchemaDlg, CDialogEx)
 
@@ -46,6 +31,7 @@ CVerifyXPathOnSchemaDlg::CVerifyXPathOnSchemaDlg(CWnd* pParent /*=nullptr*/)
 	m_sHowToUse = gHowToUseWithoutFile;
 	m_sDescription = gDescription;
 	m_pMessageBox = new CVerifyXPathMessageBox(this);
+	m_pDebugWnd = new CVerifyXPathDebug(this);
 }
 
 CVerifyXPathOnSchemaDlg::~CVerifyXPathOnSchemaDlg()
@@ -170,16 +156,14 @@ int CVerifyXPathOnSchemaDlg::IsSchemaValid() {
 		LibxmlWrapper* libxmlWrapper = new LibxmlWrapper("", 0);
 
 		if (!libxmlWrapper) {
-			Report::_printf_err(_T("Could not allocate memory for verifying "
-				"if the schema is valid."));
+			Report::_printf_err(gTextLibxmlWrapperAllocError);
 			return (-1);
 		}
 
 		if (!libxmlWrapper->isValidSchema(
 			  m_sFileToOpen.GetString(), m_sFileToOpen.GetLength()
 		    )) {
-			Report::_printf_err(_T("The given file is not existing or it "
-				"is not a valid XML schema."));
+			Report::_printf_err(gTextInvalidSchemaFromFileError);
 			retVal = (0);
 		}
 		delete libxmlWrapper;
@@ -191,24 +175,19 @@ int CVerifyXPathOnSchemaDlg::IsSchemaValid() {
 		int retVal = 1;
 		
 		if (GetTabContent(&data, &length) != 0) {
-			Report::_printf_err("Could not retrieve the content of the "
-				"currently opened tab when verifying if it's a valid "
-				"XML schema.");
+			Report::_printf_err(gTextTabContentError);
 			return (-1);
 		}
 
 		LibxmlWrapper* libxmlWrapper = new LibxmlWrapper(data, length);
 		if (!libxmlWrapper) {
-			Report::_printf_err(_T("Could not allocate memory for "
-				"verifying if the schema is valid."));
+			Report::_printf_err(gTextMemoryError);
 			delete data;
 			return (-1);
 		}
 
 		if (!libxmlWrapper->isValidSchema()) {
-			Report::_printf_err(_T("The content inside the tab is not a valid "
-				"XML schema. Please provide a valid schema in the tab content "
-				"or choose a different file."));
+			Report::_printf_err(gTextInvalidSchema);
 			retVal = 0;
 		}
 		delete libxmlWrapper;
@@ -309,6 +288,6 @@ void CVerifyXPathOnSchemaDlg::OnStnClickedStaticHowtopick()
 
 void CVerifyXPathOnSchemaDlg::OnBnClickedXpathverifyViewlogs()
 {
-	m_pMessageBox->DoModal();
+	m_pDebugWnd->DoModal();
 	// TODO: Add your control notification handler code here
 }

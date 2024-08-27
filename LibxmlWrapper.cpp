@@ -73,14 +73,30 @@ void LibxmlWrapper::addError(LoggingEntryType error)
 // I have trauma with defensive programming in C
 #define SAFE_ATTRIB(var, expr) do {var = (expr); if (var == nullptr) { goto CleanUp; } } while(0);
 
-extern "C" void __myCallback(void* data, xmlErrorPtr error)
+std::wstring getLibxmlErrorLevelStr(xmlErrorPtr error)
 {
-    LibxmlWrapper* wrapper = (LibxmlWrapper*)data;
+    std::wstring level;
 
-    std::wstring context = L"";
-    std::wstring level = (error->level < XML_ERR_ERROR) ? L"Warn" : L"Error";
+    switch (error->level) {
+    case XML_ERR_WARNING:
+        level = L"Warning";
+        break;
+    case XML_ERR_ERROR:
+        level = L"Error";
+        break;
+    case XML_ERR_FATAL:
+        level = L"Fatal";
+        break;
+    default:
+        level = L"";
+    }
+    
+    return level;
+}
+
+std::wstring getLibxmlErrorMessage(xmlErrorPtr error)
+{
     std::wstring message;
-
     wchar_t* lpwszMessage = Report::castChar(error->message, UniMode::uniUTF8);
     if (lpwszMessage) {
         message.assign(lpwszMessage);
@@ -88,16 +104,16 @@ extern "C" void __myCallback(void* data, xmlErrorPtr error)
     else {
         message = L"Unknown";
     }
+    return message;
+}
 
-    // TODO customize error
+extern "C" void __myCallback(void* data, xmlErrorPtr error)
+{
+    LibxmlWrapper* wrapper = (LibxmlWrapper*)data;
+    std::wstring context = L"";
+    std::wstring level = getLibxmlErrorLevelStr(error);
+    std::wstring message = getLibxmlErrorMessage(error);
     wrapper->addError({context, level, message});
-
-    //if (error->level < XML_ERR_ERROR) {
-    //    Report::registerWarn(error->message);
-    //}
-    //else {
-    //    Report::registerError(error->message);
-    //}
 }
 
 int LibxmlWrapper::isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLength, LPCWSTR xpath, int xpathLength) 
@@ -133,7 +149,7 @@ int LibxmlWrapper::isXPathValidOnSchema(LPCWSTR schemaFilepath, int filepathLeng
 int LibxmlWrapper::isXPathValidOnSchema(LPCWSTR xpath, int xpathLength) {
     // Verifies the XPath query on the schema provided as the XML content in the Notepad++ tab
     xmlDocPtr doc = nullptr;
-    bool isValid = false;
+    int retVal = 0;
     char* xpathu8 = nullptr;
     const char* encoding = "UTF-8";
     int flags = 0;
@@ -146,13 +162,13 @@ int LibxmlWrapper::isXPathValidOnSchema(LPCWSTR xpath, int xpathLength) {
     SAFE_ATTRIB(doc, xmlReadDoc((xmlChar*)this->content.c_str(), nullptr, encoding, flags));
 
     // TODO return -1 for allocation errors
-    isValid = this->isXPathValidOnSchema(doc, xpathu8);
+    retVal = this->isXPathValidOnSchema(doc, xpathu8);
 
 CleanUp:
     if (doc) xmlFreeDoc(doc);
     if (xpathu8) delete[] xpathu8;
 
-    return isValid;
+    return retVal;
 }
 
 int LibxmlWrapper::isXPathValidOnSchema(xmlDocPtr doc, const char* xpath) {

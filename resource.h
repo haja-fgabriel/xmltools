@@ -126,8 +126,11 @@
 #define IDI_PRETTYPRINTINDENTONLY_DM    2070
 #define IDI_PREV                        2071
 #define IDI_PREV_DM                     2072
+#define IDC_EDIT1                       2072
 #define IDI_UNCOMMENT                   2073
+#define IDC_BUTTON2                     2073
 #define IDI_UNCOMMENT_DM                2074
+#define IDC_LIST2                       2074
 #define IDI_UNESCAPE                    2075
 #define IDI_UNESCAPE_DM                 2076
 #define IDI_VALIDATEXML                 2077
@@ -141,14 +144,15 @@
 #define IDD_XPATHVERIFY_LOG             2087
 #define IDC_LIST_XPATHV_MESSAGES        2088
 #define IDC_LIST_XPATHV_CLEAR           2089
+#define IDD_XPATHVERIFY_DBG             2090
 
 // Next default values for new objects
 // 
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
-#define _APS_NEXT_RESOURCE_VALUE        2089
+#define _APS_NEXT_RESOURCE_VALUE        2092
 #define _APS_NEXT_COMMAND_VALUE         32771
-#define _APS_NEXT_CONTROL_VALUE         2072
+#define _APS_NEXT_CONTROL_VALUE         2075
 #define _APS_NEXT_SYMED_VALUE           2000
 #endif
 #endif
